@@ -6,7 +6,7 @@ DROP TABLE IF EXISTS lake.silver.toplu_ulasim;
 -- 1. Parça satırlar toplanır: yolculuk ve yolcu dışındaki kolonları aynı olan satırlar tek satır olur.
 --    ::BIGINT toplamı tablonun saklayabileceği tam sayı türüne çevirir.
 CREATE TABLE lake.silver.toplu_ulasim
-PARTITIONED BY (month(___)) AS                  -- ① Bronze tablosundaki tarih kolonu
+PARTITIONED BY (month(transition_date)) AS                  -- ① Bronze tablosundaki tarih kolonu
 SELECT * EXCLUDE (number_of_passage, number_of_passenger, _kaynak_dosya, _yukleme_zamani),
        sum(number_of_passage)::BIGINT AS number_of_passage,
        sum(number_of_passenger)::BIGINT AS number_of_passenger
@@ -17,7 +17,7 @@ GROUP BY ALL;
 UPDATE lake.silver.toplu_ulasim
 SET number_of_passage = number_of_passage // 2,
     number_of_passenger = number_of_passenger // 2
-WHERE transition_date IN (DATE '2024-01-10', DATE '___');   -- ② Uygulama 3'te bulunan Şubat günü
+WHERE transition_date IN (DATE '2024-01-10', DATE '2024-02-14');    -- ② Uygulama 3'te bulunan Şubat günü
 
 -- Kontrol: dört çarşambanın yolculuğu
 SELECT transition_date AS gun, sum(number_of_passage) AS yolculuk

@@ -5,11 +5,11 @@
 DROP TABLE IF EXISTS lake.bronze.trafik;
 
 CREATE TABLE lake.bronze.trafik
-PARTITIONED BY (month(___)) AS                  -- ① Trafik dosyasındaki tarih ve saat kolonu
+PARTITIONED BY (month(DATE_TIME)) AS                         -- ① Tarih ve saat kolonu
 SELECT * EXCLUDE (filename),
        parse_filename(filename) AS _kaynak_dosya,
        now() AS _yukleme_zamani
-FROM read_csv('veri/___', filename = true);     -- ② Ocak 2024 trafik dosyasının adı
+FROM read_csv('veri/trafik_2024_01.csv.gz', filename = true);    -- ② Ocak 2024 trafik dosyasının adı
 
 -- Kontrol: satır sayısı
 SELECT count(*) AS satir FROM lake.bronze.trafik;
